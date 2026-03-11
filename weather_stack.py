@@ -1,16 +1,20 @@
 import requests
 import psycopg2
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ================= CONFIG =================
-API_KEY = "YOUR_WEATHERSTACK_KEY"
+API_KEY = os.getenv("WEATHERSTACK_API_KEY")
 LOCATION = "28.6139,77.2090"
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 # ================= FETCH REAL-TIME =================

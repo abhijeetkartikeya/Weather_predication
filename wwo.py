@@ -3,9 +3,13 @@ import psycopg2
 import pandas as pd
 from datetime import datetime, timedelta
 import time
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ================= CONFIG =================
-API_KEY = "REMOVED_SECRET"
+API_KEY = os.getenv("WWO_API_KEY")
 
 LAT = 28.6139
 LON = 77.2090
@@ -13,10 +17,10 @@ LON = 77.2090
 START_DATE = datetime(2015, 1, 1)
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 # ================= CONNECT DB =================

@@ -3,6 +3,10 @@ import psycopg2
 import pandas as pd
 from io import StringIO
 from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ---------------- CONFIG ----------------
 LAT = 22.25
@@ -14,10 +18,10 @@ END_DATE = (datetime.today() - timedelta(days=7)).strftime("%Y%m%d")
 CSV_PATH = "/Users/kartikeya/Desktop/nasa_historical_data.csv"
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 # ---------------- FETCH NASA DATA ----------------

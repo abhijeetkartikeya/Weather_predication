@@ -3,6 +3,10 @@ from meteostat.stations import Stations
 from meteostat.hourly import Hourly
 from datetime import datetime
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 LAT = 28.6139
 LON = 77.2090
@@ -24,10 +28,10 @@ print("Using station:", station_id)
 
 # ---------------- CONNECT DB ----------------
 conn = psycopg2.connect(
-    host="localhost",
-    database="weatherdb",
-    user="kartikeya",
-    password=""
+    host=os.getenv("PG_HOST", "localhost"),
+    database=os.getenv("PG_DATABASE", "weatherdb"),
+    user=os.getenv("PG_USER", "kartikeya"),
+    password=os.getenv("PG_PASSWORD", "")
 )
 
 cur = conn.cursor()

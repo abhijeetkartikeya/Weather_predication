@@ -4,6 +4,10 @@ import pandas as pd
 import time
 from datetime import datetime
 from psycopg2.extras import execute_values
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 LAT = 22.25
 LON = 72.74
@@ -14,10 +18,10 @@ UPDATE_INTERVAL = 900  # 15 minutes
 CSV_PATH = "/Users/kartikeya/Desktop/weather_predication/live_forecast_data.csv"
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 

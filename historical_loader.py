@@ -1,6 +1,10 @@
 import requests
 import psycopg2
 import pandas as pd
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 LAT = 22.25
 LON = 72.74
@@ -10,10 +14,10 @@ END_YEAR = 2026
 END_CUTOFF = "2026-03-02 12:00:00"
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 conn = psycopg2.connect(**DB_CONFIG)

@@ -10,3 +10,11 @@ __pycache__/
 *.log
 
 .DS_Store
+
+# Environment & secrets
+.env
+.envr
+.envrc
+
+# Models (large binary files)
+weather_ml/models/

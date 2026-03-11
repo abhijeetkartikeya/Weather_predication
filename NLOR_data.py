@@ -2,18 +2,22 @@ import requests
 import psycopg2
 import pandas as pd
 from psycopg2.extras import execute_batch
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ================= CONFIG =================
-OPENWEATHER_API_KEY = "REMOVED_SECRET"
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 LAT = 28.6139
 LON = 77.2090
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "weatherdb",
-    "user": "kartikeya",
-    "password": ""
+    "host": os.getenv("PG_HOST", "localhost"),
+    "database": os.getenv("PG_DATABASE", "weatherdb"),
+    "user": os.getenv("PG_USER", "kartikeya"),
+    "password": os.getenv("PG_PASSWORD", "")
 }
 
 # ================= FETCH SOLAR DATA (NASA POWER - WORKS FOR INDIA) =================
