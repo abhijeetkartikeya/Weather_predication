@@ -1,0 +1,257 @@
+{
+  "evaluation": {
+    "ghi": {
+      "mae": 11.8209,
+      "rmse": 34.3974,
+      "r2": 0.9871,
+      "best_iteration": 555
+    },
+    "dhi": {
+      "mae": 3.0396,
+      "rmse": 10.1017,
+      "r2": 0.966,
+      "best_iteration": 937
+    },
+    "temperature": {
+      "mae": 0.2964,
+      "rmse": 0.4914,
+      "r2": 0.9879,
+      "best_iteration": 1000
+    },
+    "windspeed": {
+      "mae": 0.1859,
+      "rmse": 0.2917,
+      "r2": 0.9867,
+      "best_iteration": 1000
+    },
+    "cloud_cover": {
+      "mae": 0.3909,
+      "rmse": 1.0684,
+      "r2": 0.9916,
+      "best_iteration": 999
+    }
+  },
+  "feature_importance": {
+    "ghi": [
+      {
+        "feature": "ghi_lag4",
+        "importance": 4614
+      },
+      {
+        "feature": "ghi_rstd_1h",
+        "importance": 4380
+      },
+      {
+        "feature": "ghi_rmean_1h",
+        "importance": 4013
+      },
+      {
+        "feature": "ghi_lag1",
+        "importance": 3107
+      },
+      {
+        "feature": "ghi_lag96",
+        "importance": 2976
+      },
+      {
+        "feature": "ghi_lag2",
+        "importance": 2303
+      },
+      {
+        "feature": "ghi_rstd_3h",
+        "importance": 1991
+      },
+      {
+        "feature": "dhi_lag4",
+        "importance": 1940
+      },
+      {
+        "feature": "dhi_lag96",
+        "importance": 1739
+      },
+      {
+        "feature": "dhi_rstd_1h",
+        "importance": 1705
+      }
+    ],
+    "dhi": [
+      {
+        "feature": "dhi_lag4",
+        "importance": 7856
+      },
+      {
+        "feature": "dhi_rmean_1h",
+        "importance": 7294
+      },
+      {
+        "feature": "dhi_rstd_1h",
+        "importance": 7242
+      },
+      {
+        "feature": "dhi_lag1",
+        "importance": 5403
+      },
+      {
+        "feature": "dhi_lag96",
+        "importance": 5234
+      },
+      {
+        "feature": "dhi_lag2",
+        "importance": 4700
+      },
+      {
+        "feature": "dhi_rstd_3h",
+        "importance": 2959
+      },
+      {
+        "feature": "dhi_lag8",
+        "importance": 2788
+      },
+      {
+        "feature": "ghi_lag4",
+        "importance": 2518
+      },
+      {
+        "feature": "dhi_rmean_3h",
+        "importance": 2513
+      }
+    ],
+    "temperature": [
+      {
+        "feature": "temperature_rstd_1h",
+        "importance": 7920
+      },
+      {
+        "feature": "temperature_lag4",
+        "importance": 7688
+      },
+      {
+        "feature": "temperature_rmean_1h",
+        "importance": 7137
+      },
+      {
+        "feature": "temperature_lag96",
+        "importance": 5510
+      },
+      {
+        "feature": "temperature_lag1",
+        "importance": 4262
+      },
+      {
+        "feature": "hour_sin",
+        "importance": 4069
+      },
+      {
+        "feature": "temperature_rmean_3h",
+        "importance": 3846
+      },
+      {
+        "feature": "doy_sin",
+        "importance": 3730
+      },
+      {
+        "feature": "hour_cos",
+        "importance": 3616
+      },
+      {
+        "feature": "temperature_rstd_3h",
+        "importance": 3603
+      }
+    ],
+    "windspeed": [
+      {
+        "feature": "windspeed_lag4",
+        "importance": 15018
+      },
+      {
+        "feature": "windspeed_rmean_1h",
+        "importance": 13014
+      },
+      {
+        "feature": "windspeed_rstd_1h",
+        "importance": 11842
+      },
+      {
+        "feature": "windspeed_lag8",
+        "importance": 7505
+      },
+      {
+        "feature": "windspeed_lag1",
+        "importance": 6612
+      },
+      {
+        "feature": "windspeed_lag2",
+        "importance": 5965
+      },
+      {
+        "feature": "windspeed_rmean_3h",
+        "importance": 3975
+      },
+      {
+        "feature": "windspeed_lag96",
+        "importance": 3414
+      },
+      {
+        "feature": "windspeed_lag16",
+        "importance": 3258
+      },
+      {
+        "feature": "windspeed_rstd_3h",
+        "importance": 2952
+      }
+    ],
+    "cloud_cover": [
+      {
+        "feature": "cloud_cover_lag4",
+        "importance": 10059
+      },
+      {
+        "feature": "cloud_cover_rmean_1h",
+        "importance": 9375
+      },
+      {
+        "feature": "cloud_cover_rstd_1h",
+        "importance": 9358
+      },
+      {
+        "feature": "cloud_cover_lag1",
+        "importance": 9237
+      },
+      {
+        "feature": "cloud_cover_lag2",
+        "importance": 9045
+      },
+      {
+        "feature": "cloud_cover_lag8",
+        "importance": 4774
+      },
+      {
+        "feature": "cloud_cover_rmean_3h",
+        "importance": 4761
+      },
+      {
+        "feature": "windspeed_lag96",
+        "importance": 3677
+      },
+      {
+        "feature": "windspeed_lag4",
+        "importance": 3475
+      },
+      {
+        "feature": "windspeed_lag1",
+        "importance": 3326
+      }
+    ]
+  },
+  "dataset_info": {
+    "total_rows": 392160,
+    "train_rows": 389280,
+    "val_rows": 2880,
+    "feature_count": 72,
+    "date_range": [
+      "2015-01-02 00:00:00",
+      "2026-03-09 23:45:00"
+    ]
+  },
+  "training_time_seconds": 126.8
+}

@@ -1,0 +1,12 @@
+venv/
+venv312/
+__pycache__/
+
+*.csv
+*.pkl
+*.h5
+*.pt
+*.parquet
+*.log
+
+.DS_Store
