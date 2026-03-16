@@ -1,0 +1,126 @@
+artifact_path: mlflow-artifacts:/0/models/m-7fc1b2a4fabc450d8b9eb31d56218cf8/artifacts
+flavors:
+  lightgbm:
+    code: null
+    data: model.pkl
+    lgb_version: 4.6.0
+    model_class: lightgbm.sklearn.LGBMRegressor
+    serialization_format: cloudpickle
+    skops_trusted_types: null
+  python_function:
+    data: model.pkl
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.14.3
+is_signature_from_type_hint: false
+mlflow_version: 3.10.1
+model_id: m-7fc1b2a4fabc450d8b9eb31d56218cf8
+model_size_bytes: 45311885
+model_uuid: m-7fc1b2a4fabc450d8b9eb31d56218cf8
+prompts: null
+run_id: cac38d437a394c48bbbf90307a243810
+signature:
+  inputs: '[{"type": "double", "name": "ghi_lag1", "required": true}, {"type": "double",
+    "name": "ghi_lag2", "required": true}, {"type": "double", "name": "ghi_lag4",
+    "required": true}, {"type": "double", "name": "ghi_lag8", "required": true}, {"type":
+    "double", "name": "ghi_lag16", "required": true}, {"type": "double", "name": "ghi_lag96",
+    "required": true}, {"type": "double", "name": "ghi_lag192", "required": true},
+    {"type": "double", "name": "ghi_lag288", "required": true}, {"type": "double",
+    "name": "dhi_lag1", "required": true}, {"type": "double", "name": "dhi_lag2",
+    "required": true}, {"type": "double", "name": "dhi_lag4", "required": true}, {"type":
+    "double", "name": "dhi_lag8", "required": true}, {"type": "double", "name": "dhi_lag16",
+    "required": true}, {"type": "double", "name": "dhi_lag96", "required": true},
+    {"type": "double", "name": "dhi_lag192", "required": true}, {"type": "double",
+    "name": "dhi_lag288", "required": true}, {"type": "double", "name": "temperature_lag1",
+    "required": true}, {"type": "double", "name": "temperature_lag2", "required":
+    true}, {"type": "double", "name": "temperature_lag4", "required": true}, {"type":
+    "double", "name": "temperature_lag8", "required": true}, {"type": "double", "name":
+    "temperature_lag16", "required": true}, {"type": "double", "name": "temperature_lag96",
+    "required": true}, {"type": "double", "name": "temperature_lag192", "required":
+    true}, {"type": "double", "name": "temperature_lag288", "required": true}, {"type":
+    "double", "name": "windspeed_lag1", "required": true}, {"type": "double", "name":
+    "windspeed_lag2", "required": true}, {"type": "double", "name": "windspeed_lag4",
+    "required": true}, {"type": "double", "name": "windspeed_lag8", "required": true},
+    {"type": "double", "name": "windspeed_lag16", "required": true}, {"type": "double",
+    "name": "windspeed_lag96", "required": true}, {"type": "double", "name": "windspeed_lag192",
+    "required": true}, {"type": "double", "name": "windspeed_lag288", "required":
+    true}, {"type": "double", "name": "cloud_cover_lag1", "required": true}, {"type":
+    "double", "name": "cloud_cover_lag2", "required": true}, {"type": "double", "name":
+    "cloud_cover_lag4", "required": true}, {"type": "double", "name": "cloud_cover_lag8",
+    "required": true}, {"type": "double", "name": "cloud_cover_lag16", "required":
+    true}, {"type": "double", "name": "cloud_cover_lag96", "required": true}, {"type":
+    "double", "name": "cloud_cover_lag192", "required": true}, {"type": "double",
+    "name": "cloud_cover_lag288", "required": true}, {"type": "double", "name": "ghi_rmean_1h",
+    "required": true}, {"type": "double", "name": "ghi_rstd_1h", "required": true},
+    {"type": "double", "name": "ghi_rmean_3h", "required": true}, {"type": "double",
+    "name": "ghi_rstd_3h", "required": true}, {"type": "double", "name": "ghi_rmean_6h",
+    "required": true}, {"type": "double", "name": "ghi_rstd_6h", "required": true},
+    {"type": "double", "name": "ghi_rmean_12h", "required": true}, {"type": "double",
+    "name": "ghi_rstd_12h", "required": true}, {"type": "double", "name": "dhi_rmean_1h",
+    "required": true}, {"type": "double", "name": "dhi_rstd_1h", "required": true},
+    {"type": "double", "name": "dhi_rmean_3h", "required": true}, {"type": "double",
+    "name": "dhi_rstd_3h", "required": true}, {"type": "double", "name": "dhi_rmean_6h",
+    "required": true}, {"type": "double", "name": "dhi_rstd_6h", "required": true},
+    {"type": "double", "name": "dhi_rmean_12h", "required": true}, {"type": "double",
+    "name": "dhi_rstd_12h", "required": true}, {"type": "double", "name": "temperature_rmean_1h",
+    "required": true}, {"type": "double", "name": "temperature_rstd_1h", "required":
+    true}, {"type": "double", "name": "temperature_rmean_3h", "required": true}, {"type":
+    "double", "name": "temperature_rstd_3h", "required": true}, {"type": "double",
+    "name": "temperature_rmean_6h", "required": true}, {"type": "double", "name":
+    "temperature_rstd_6h", "required": true}, {"type": "double", "name": "temperature_rmean_12h",
+    "required": true}, {"type": "double", "name": "temperature_rstd_12h", "required":
+    true}, {"type": "double", "name": "windspeed_rmean_1h", "required": true}, {"type":
+    "double", "name": "windspeed_rstd_1h", "required": true}, {"type": "double", "name":
+    "windspeed_rmean_3h", "required": true}, {"type": "double", "name": "windspeed_rstd_3h",
+    "required": true}, {"type": "double", "name": "windspeed_rmean_6h", "required":
+    true}, {"type": "double", "name": "windspeed_rstd_6h", "required": true}, {"type":
+    "double", "name": "windspeed_rmean_12h", "required": true}, {"type": "double",
+    "name": "windspeed_rstd_12h", "required": true}, {"type": "double", "name": "cloud_cover_rmean_1h",
+    "required": true}, {"type": "double", "name": "cloud_cover_rstd_1h", "required":
+    true}, {"type": "double", "name": "cloud_cover_rmean_3h", "required": true}, {"type":
+    "double", "name": "cloud_cover_rstd_3h", "required": true}, {"type": "double",
+    "name": "cloud_cover_rmean_6h", "required": true}, {"type": "double", "name":
+    "cloud_cover_rstd_6h", "required": true}, {"type": "double", "name": "cloud_cover_rmean_12h",
+    "required": true}, {"type": "double", "name": "cloud_cover_rstd_12h", "required":
+    true}, {"type": "double", "name": "hour_sin", "required": true}, {"type": "double",
+    "name": "hour_cos", "required": true}, {"type": "double", "name": "doy_sin", "required":
+    true}, {"type": "double", "name": "doy_cos", "required": true}, {"type": "integer",
+    "name": "month", "required": true}, {"type": "long", "name": "is_daytime", "required":
+    true}, {"type": "integer", "name": "weekday", "required": true}, {"type": "double",
+    "name": "ghi_dhi_ratio", "required": true}, {"type": "double", "name": "temp_wind_interaction",
+    "required": true}, {"type": "double", "name": "cloud_ghi_interaction", "required":
+    true}, {"type": "double", "name": "ghi_ema_4", "required": true}, {"type": "double",
+    "name": "ghi_ema_12", "required": true}, {"type": "double", "name": "ghi_ema_24",
+    "required": true}, {"type": "double", "name": "ghi_ema_48", "required": true},
+    {"type": "double", "name": "ghi_diff_1h", "required": true}, {"type": "double",
+    "name": "ghi_diff_24h", "required": true}, {"type": "double", "name": "dhi_ema_4",
+    "required": true}, {"type": "double", "name": "dhi_ema_12", "required": true},
+    {"type": "double", "name": "dhi_ema_24", "required": true}, {"type": "double",
+    "name": "dhi_ema_48", "required": true}, {"type": "double", "name": "dhi_diff_1h",
+    "required": true}, {"type": "double", "name": "dhi_diff_24h", "required": true},
+    {"type": "double", "name": "temperature_ema_4", "required": true}, {"type": "double",
+    "name": "temperature_ema_12", "required": true}, {"type": "double", "name": "temperature_ema_24",
+    "required": true}, {"type": "double", "name": "temperature_ema_48", "required":
+    true}, {"type": "double", "name": "temperature_diff_1h", "required": true}, {"type":
+    "double", "name": "temperature_diff_24h", "required": true}, {"type": "double",
+    "name": "windspeed_ema_4", "required": true}, {"type": "double", "name": "windspeed_ema_12",
+    "required": true}, {"type": "double", "name": "windspeed_ema_24", "required":
+    true}, {"type": "double", "name": "windspeed_ema_48", "required": true}, {"type":
+    "double", "name": "windspeed_diff_1h", "required": true}, {"type": "double", "name":
+    "windspeed_diff_24h", "required": true}, {"type": "double", "name": "cloud_cover_ema_4",
+    "required": true}, {"type": "double", "name": "cloud_cover_ema_12", "required":
+    true}, {"type": "double", "name": "cloud_cover_ema_24", "required": true}, {"type":
+    "double", "name": "cloud_cover_ema_48", "required": true}, {"type": "double",
+    "name": "cloud_cover_diff_1h", "required": true}, {"type": "double", "name": "cloud_cover_diff_24h",
+    "required": true}, {"type": "double", "name": "om_ghi", "required": true}, {"type":
+    "double", "name": "om_dhi", "required": true}, {"type": "double", "name": "om_temperature",
+    "required": true}, {"type": "double", "name": "om_windspeed", "required": true},
+    {"type": "double", "name": "om_cloud_cover", "required": true}, {"type": "double",
+    "name": "vedas_temperature", "required": true}, {"type": "double", "name": "vedas_solar_potential",
+    "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-03-12 20:05:25.295988'

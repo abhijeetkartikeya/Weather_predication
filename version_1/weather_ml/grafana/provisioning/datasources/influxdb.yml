@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: weather-ml
+      defaultBucket: weather_forecast
+      tlsSkipVerify: true
+    secureJsonData:
+      token: weather-ml-token-secret
+    isDefault: true
