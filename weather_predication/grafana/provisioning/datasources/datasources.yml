@@ -1,0 +1,27 @@
+apiVersion: 1
+
+datasources:
+  - name: Weather PostgreSQL
+    uid: weather-postgres
+    type: postgres
+    access: proxy
+    url: ${GRAFANA_POSTGRES_HOST}
+    user: ${GRAFANA_POSTGRES_USER}
+    secureJsonData:
+      password: ${GRAFANA_POSTGRES_PASSWORD}
+    jsonData:
+      database: ${GRAFANA_POSTGRES_DB}
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+    isDefault: true
+    editable: true
+
+  - name: Weather API
+    uid: weather-api
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    isDefault: false
+    editable: true
+    jsonData:
+      global_queries: []
