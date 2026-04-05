@@ -16,5 +16,15 @@ __pycache__/
 .envr
 .envrc
 
-# Models (large binary files)
+# Models (large binary files — metadata JSON kept, binaries excluded)
 weather_ml/models/
+*.joblib
+artifacts/reports/*.csv
+
+# Python / cache
+.venv/
+*.pyc
+
+# Node
+node_modules/
+.claude/

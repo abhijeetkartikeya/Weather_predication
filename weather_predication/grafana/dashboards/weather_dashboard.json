@@ -1,0 +1,980 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "bolt",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Generate Forecast for this Location",
+      "tooltip": "Click to trigger the ML pipeline for the current lat/lon. Data appears in ~3-5 minutes.",
+      "type": "link",
+      "url": "http://localhost:8001/trigger?latitude=${lat}&longitude=${lon}"
+    }
+  ],
+  "panels": [
+    {
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "weather-api" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "exists": { "color": "green", "index": 0, "text": "Ready" } }, "type": "value" },
+            { "options": { "triggered": { "color": "yellow", "index": 1, "text": "Generating... refresh in 3-5 min" } }, "type": "value" },
+            { "options": { "already_running": { "color": "orange", "index": 2, "text": "Pipeline running... please wait" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "id": 200,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^status$/", "values": false },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "title": "Forecast Status",
+      "description": "Auto-triggers prediction pipeline when you enter a new location. Green = data ready, Yellow = generating.",
+      "targets": [
+        {
+          "columns": [],
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "refId": "A",
+          "root_selector": "",
+          "source": "url",
+          "type": "json",
+          "url": "http://api:8001/trigger?latitude=${lat}&longitude=${lon}",
+          "url_options": { "method": "GET" }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
+      "id": 100,
+      "title": "Current Conditions",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 35 },
+              { "color": "#F2495C", "value": 42 }
+            ]
+          },
+          "unit": "celsius",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 0, "y": 3 },
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time, temperature_2m AS \"Temperature\"\nFROM public.weather_observations\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\nORDER BY time DESC\nLIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Temperature Now",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 70 },
+              { "color": "#F2495C", "value": 90 }
+            ]
+          },
+          "unit": "percent",
+          "max": 100,
+          "min": 0,
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 5, "y": 3 },
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time, cloud_cover AS \"Cloud Cover\"\nFROM public.weather_observations\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\nORDER BY time DESC\nLIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Cloud Cover Now",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 15 },
+              { "color": "#F2495C", "value": 25 }
+            ]
+          },
+          "unit": "velocityms",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 10, "y": 3 },
+      "id": 12,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time, wind_speed_10m AS \"Wind Speed\"\nFROM public.weather_observations\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\nORDER BY time DESC\nLIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Wind Speed Now",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#5794F2", "value": null },
+              { "color": "#FF9830", "value": 600 },
+              { "color": "#F2495C", "value": 900 }
+            ]
+          },
+          "unit": "wattm2",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 15, "y": 3 },
+      "id": 13,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time, shortwave_radiation AS \"GHI\"\nFROM public.weather_observations\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\nORDER BY time DESC\nLIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "GHI Now",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Latest model training info and prediction count",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null }
+            ]
+          },
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 3 },
+      "id": 14,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT trained_at AS time, COUNT(*) AS \"Models Trained\"\nFROM public.weather_training_runs\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\nGROUP BY trained_at\nORDER BY trained_at DESC\nLIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Models",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "id": 101,
+      "title": "Forecast vs Actuals (72h)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Solid = actual observations, Dashed = ML forecast, Dotted = provider forecast",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "ml_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [10, 6], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "provider_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [4, 4], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "actual" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
+      "id": 1,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "WITH location AS (\n  SELECT CAST('${lat}' AS DOUBLE PRECISION) AS lat, CAST('${lon}' AS DOUBLE PRECISION) AS lon\n), latest_ml AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n), latest_provider AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n)\nSELECT time, metric, value FROM (\n  SELECT o.time, 'actual' AS metric, o.temperature_2m AS value\n  FROM public.weather_observations o JOIN location l ON TRUE\n  WHERE o.lat = l.lat AND o.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'ml_forecast', wf.temperature_2m\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_ml i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'provider_forecast', wf.temperature_2m\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_provider i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n) series_data\nWHERE value IS NOT NULL AND $__timeFilter(time)\nORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "title": "Temperature (°C)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Solid = actual observations, Dashed = ML forecast, Dotted = provider forecast",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "ml_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [10, 6], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "provider_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [4, 4], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "actual" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
+      "id": 2,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "WITH location AS (\n  SELECT CAST('${lat}' AS DOUBLE PRECISION) AS lat, CAST('${lon}' AS DOUBLE PRECISION) AS lon\n), latest_ml AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n), latest_provider AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n)\nSELECT time, metric, value FROM (\n  SELECT o.time, 'actual' AS metric, o.cloud_cover AS value\n  FROM public.weather_observations o JOIN location l ON TRUE\n  WHERE o.lat = l.lat AND o.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'ml_forecast', wf.cloud_cover\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_ml i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'provider_forecast', wf.cloud_cover\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_provider i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n) series_data\nWHERE value IS NOT NULL AND $__timeFilter(time)\nORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "title": "Cloud Cover (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Solid = actual observations, Dashed = ML forecast, Dotted = provider forecast",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "velocityms"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "ml_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [10, 6], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "provider_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [4, 4], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "actual" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 17 },
+      "id": 5,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "WITH location AS (\n  SELECT CAST('${lat}' AS DOUBLE PRECISION) AS lat, CAST('${lon}' AS DOUBLE PRECISION) AS lon\n), latest_ml AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n), latest_provider AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n)\nSELECT time, metric, value FROM (\n  SELECT o.time, 'actual' AS metric, o.wind_speed_10m AS value\n  FROM public.weather_observations o JOIN location l ON TRUE\n  WHERE o.lat = l.lat AND o.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'ml_forecast', wf.wind_speed_10m\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_ml i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'provider_forecast', wf.wind_speed_10m\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_provider i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n) series_data\nWHERE value IS NOT NULL AND $__timeFilter(time)\nORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "title": "Wind Speed (m/s)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "id": 102,
+      "title": "Solar Radiation",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Solid = actual observations, Dashed = ML forecast, Dotted = provider forecast",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "wattm2",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "ml_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [10, 6], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "provider_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [4, 4], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "actual" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 27 },
+      "id": 3,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "WITH location AS (\n  SELECT CAST('${lat}' AS DOUBLE PRECISION) AS lat, CAST('${lon}' AS DOUBLE PRECISION) AS lon\n), latest_ml AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n), latest_provider AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n)\nSELECT time, metric, value FROM (\n  SELECT o.time, 'actual' AS metric, o.shortwave_radiation AS value\n  FROM public.weather_observations o JOIN location l ON TRUE\n  WHERE o.lat = l.lat AND o.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'ml_forecast', wf.shortwave_radiation\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_ml i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'provider_forecast', wf.shortwave_radiation\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_provider i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n) series_data\nWHERE value IS NOT NULL AND $__timeFilter(time)\nORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "title": "GHI / Shortwave Radiation (W/m²)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "Solid = actual observations, Dashed = ML forecast, Dotted = provider forecast",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "wattm2",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "ml_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [10, 6], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "provider_forecast" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [4, 4], "fill": "dash" } },
+              { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "actual" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 27 },
+      "id": 4,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "WITH location AS (\n  SELECT CAST('${lat}' AS DOUBLE PRECISION) AS lat, CAST('${lon}' AS DOUBLE PRECISION) AS lon\n), latest_ml AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n), latest_provider AS (\n  SELECT MAX(wf.issue_time) AS issue_time\n  FROM public.weather_forecast wf JOIN location l ON TRUE\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n)\nSELECT time, metric, value FROM (\n  SELECT o.time, 'actual' AS metric, o.diffuse_radiation AS value\n  FROM public.weather_observations o JOIN location l ON TRUE\n  WHERE o.lat = l.lat AND o.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'ml_forecast', wf.diffuse_radiation\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_ml i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'ml' AND wf.lat = l.lat AND wf.lon = l.lon\n  UNION ALL\n  SELECT wf.forecast_time, 'provider_forecast', wf.diffuse_radiation\n  FROM public.weather_forecast wf JOIN location l ON TRUE JOIN latest_provider i ON wf.issue_time = i.issue_time\n  WHERE wf.forecast_type = 'provider' AND wf.lat = l.lat AND wf.lon = l.lon\n) series_data\nWHERE value IS NOT NULL AND $__timeFilter(time)\nORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "title": "DHI / Diffuse Radiation (W/m²)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "id": 103,
+      "title": "Model Performance",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "description": "MAE and RMSE from the latest training run for each target variable",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "mae" },
+            "properties": [
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                { "color": "#73BF69", "value": null },
+                { "color": "#FF9830", "value": 3 },
+                { "color": "#F2495C", "value": 5 }
+              ]}}
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "rmse" },
+            "properties": [
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                { "color": "#73BF69", "value": null },
+                { "color": "#FF9830", "value": 5 },
+                { "color": "#F2495C", "value": 8 }
+              ]}}
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 37 },
+      "id": 20,
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "trained_at" }]
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  target,\n  ROUND(CAST(metrics->>'mae' AS NUMERIC), 4) AS mae,\n  ROUND(CAST(metrics->>'rmse' AS NUMERIC), 4) AS rmse,\n  ROUND(CAST(metrics->>'r2' AS NUMERIC), 4) AS r2,\n  train_rows,\n  validation_rows,\n  trained_at\nFROM public.weather_training_runs\nWHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n  AND lon = CAST('${lon}' AS DOUBLE PRECISION)\n  AND model_version = (\n    SELECT model_version FROM public.weather_training_runs\n    WHERE lat = CAST('${lat}' AS DOUBLE PRECISION)\n      AND lon = CAST('${lon}' AS DOUBLE PRECISION)\n    ORDER BY trained_at DESC LIMIT 1\n  )\nORDER BY target;",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest Model Training Metrics",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 44 },
+      "id": 300,
+      "title": "Leakage-Free Backtest: Feb–Mar 2026 (Trained on data up to Jan 31, Recursive Predictions)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "#F2495C", "value": null },
+            { "color": "#FF9830", "value": 0 },
+            { "color": "#73BF69", "value": 0.5 }
+          ]},
+          "decimals": 4
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 45 },
+      "id": 301,
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "targets": [{
+        "editorMode": "code",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT variable AS \"Variable\", ROUND(test_mae::numeric, 3) AS \"MAE\", ROUND(test_rmse::numeric, 3) AS \"RMSE\", ROUND(test_r2::numeric, 4) AS \"R² Score\" FROM public.leakage_free_metrics ORDER BY variable;",
+        "refId": "A"
+      }],
+      "title": "Recursive Forecast Metrics (Zero Data Leakage — 26 Years Training, Tested on Feb–Mar 2026)",
+      "description": "Model trained ONLY on data up to Jan 31 2026. Predictions made recursively — each prediction feeds into the next step. No future data ever used.",
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "°C",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 49 },
+      "id": 302,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'temperature_2m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Temperature (°C) — Actual vs Recursive ML Forecast",
+      "description": "Green solid = actual observed temperature. Orange dashed = ML recursive forecast (no future data used). Train cutoff: Jan 31 2026.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "%",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 49 },
+      "id": 303,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'cloud_cover' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Cloud Cover (%) — Actual vs Recursive ML Forecast",
+      "description": "Cloud cover is inherently chaotic. Recursive errors compound but overall trend is captured.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "m/s",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "velocityms"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 58 },
+      "id": 304,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'wind_speed_10m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Wind Speed (m/s) — Actual vs Recursive ML Forecast",
+      "description": "Wind is highly stochastic. Model captures general magnitude but not rapid fluctuations.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "W/m²",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "wattm2"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 58 },
+      "id": 305,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'shortwave_radiation' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "GHI / Shortwave Radiation (W/m²) — Actual vs Recursive ML Forecast",
+      "description": "Best performing recursive forecast (R²=0.87). Strong diurnal cycle makes solar highly predictable.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisLabel": "Error (Actual - Predicted)",
+            "drawStyle": "bars",
+            "fillOpacity": 30,
+            "lineWidth": 0,
+            "pointSize": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "residual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 67 },
+      "id": 306,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, residual FROM public.leakage_free_forecast WHERE variable = 'temperature_2m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Temperature Residuals (Actual − Predicted)",
+      "description": "Random scatter = no systematic bias. Drift over time = error compounding (expected in recursive forecasting).",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisLabel": "Error (Actual - Predicted)",
+            "drawStyle": "bars",
+            "fillOpacity": 30,
+            "lineWidth": 0,
+            "pointSize": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "residual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 67 },
+      "id": 307,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, residual FROM public.leakage_free_forecast WHERE variable = 'shortwave_radiation' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "GHI Residuals (Actual − Predicted)",
+      "description": "Solar residuals. Peaks show cloudy-day misses where model predicted clear sky.",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "15m",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["weather", "machine-learning", "forecast", "india"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "16.04", "value": "16.04" },
+        "hide": 0,
+        "label": "Latitude",
+        "name": "lat",
+        "options": [{ "selected": true, "text": "16.04", "value": "16.04" }],
+        "query": "16.04",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": { "selected": false, "text": "75.05", "value": "75.05" },
+        "hide": 0,
+        "label": "Longitude",
+        "name": "lon",
+        "options": [{ "selected": true, "text": "75.05", "value": "75.05" }],
+        "query": "75.05",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": { "from": "now-7d", "to": "now+3d" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Weather Forecasting ML Dashboard",
+  "uid": "weather-ml-dashboard",
+  "version": 3,
+  "weekStart": ""
+}
