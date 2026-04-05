@@ -1,0 +1,72 @@
+[
+  {
+    "model_version": "20260329192620",
+    "target": "temperature_2m",
+    "lat": 28.7041,
+    "lon": 77.1025,
+    "trained_at": "2026-03-29T19:26:26.206903+00:00",
+    "train_rows": 15743,
+    "validation_rows": 1345,
+    "metrics": {
+      "mae": 0.1413928449552741,
+      "rmse": 0.21364453731165506,
+      "r2": 0.997945633545184
+    }
+  },
+  {
+    "model_version": "20260329192620",
+    "target": "cloud_cover",
+    "lat": 28.7041,
+    "lon": 77.1025,
+    "trained_at": "2026-03-29T19:26:30.790009+00:00",
+    "train_rows": 15743,
+    "validation_rows": 1345,
+    "metrics": {
+      "mae": 3.4280373814602325,
+      "rmse": 4.852022851730787,
+      "r2": 0.9839003258181269
+    }
+  },
+  {
+    "model_version": "20260329192620",
+    "target": "wind_speed_10m",
+    "lat": 28.7041,
+    "lon": 77.1025,
+    "trained_at": "2026-03-29T19:26:36.276050+00:00",
+    "train_rows": 15743,
+    "validation_rows": 1345,
+    "metrics": {
+      "mae": 0.2895514865524264,
+      "rmse": 0.4692068937882946,
+      "r2": 0.9776582905246689
+    }
+  },
+  {
+    "model_version": "20260329192620",
+    "target": "shortwave_radiation",
+    "lat": 28.7041,
+    "lon": 77.1025,
+    "trained_at": "2026-03-29T19:26:41.182014+00:00",
+    "train_rows": 15743,
+    "validation_rows": 1345,
+    "metrics": {
+      "mae": 12.296261237908958,
+      "rmse": 24.511066992181842,
+      "r2": 0.9933919612033026
+    }
+  },
+  {
+    "model_version": "20260329192620",
+    "target": "diffuse_radiation",
+    "lat": 28.7041,
+    "lon": 77.1025,
+    "trained_at": "2026-03-29T19:26:45.939723+00:00",
+    "train_rows": 15743,
+    "validation_rows": 1345,
+    "metrics": {
+      "mae": 4.495775216506174,
+      "rmse": 8.928666049013112,
+      "r2": 0.9898184414866873
+    }
+  }
+]

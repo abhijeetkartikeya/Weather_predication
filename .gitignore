@@ -27,3 +27,4 @@ artifacts/reports/*.csv
 
 # Node
 node_modules/
+.claude/

@@ -94,11 +94,14 @@ def train_models(
         x_train, x_val, y_train, y_val = _split_temporal(features, targets[target], settings)
 
         model = XGBRegressor(
-            n_estimators=250,
-            learning_rate=0.05,
-            max_depth=6,
-            subsample=0.9,
-            colsample_bytree=0.8,
+            n_estimators=350,
+            learning_rate=0.03,
+            max_depth=5,
+            subsample=0.8,
+            colsample_bytree=0.7,
+            min_child_weight=10,
+            reg_alpha=0.1,
+            reg_lambda=1.0,
             objective="reg:squarederror",
             eval_metric="mae",
             random_state=settings.model_random_state,

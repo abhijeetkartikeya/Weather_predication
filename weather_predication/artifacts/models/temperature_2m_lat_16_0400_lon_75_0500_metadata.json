@@ -2,7 +2,7 @@
   "target": "temperature_2m",
   "lat": 16.04,
   "lon": 75.05,
-  "model_version": "20260324090532",
+  "model_version": "20260403090515",
   "algorithm": "xgboost",
   "feature_names": [
     "hour_sin",
@@ -316,8 +316,8 @@
   ],
   "feature_set_version": "v1",
   "metrics": {
-    "mae": 0.1427320510126844,
-    "rmse": 0.25466175542856023,
-    "r2": 0.9972076747929006
+    "mae": 0.17709274036733633,
+    "rmse": 0.27533992257524387,
+    "r2": 0.9957862964592408
   }
 }

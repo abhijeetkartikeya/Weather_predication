@@ -2,7 +2,7 @@
   "target": "wind_speed_10m",
   "lat": 28.6139,
   "lon": 77.209,
-  "model_version": "20260324024225",
+  "model_version": "20260403090114",
   "algorithm": "xgboost",
   "feature_names": [
     "hour_sin",
@@ -316,8 +316,8 @@
   ],
   "feature_set_version": "v1",
   "metrics": {
-    "mae": 0.3190020415065014,
-    "rmse": 0.4980787195633792,
-    "r2": 0.9821595260800526
+    "mae": 0.2800213100209999,
+    "rmse": 0.39308980493516715,
+    "r2": 0.9804596707984746
   }
 }

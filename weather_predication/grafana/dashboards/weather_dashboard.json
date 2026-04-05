@@ -657,6 +657,289 @@
       ],
       "title": "Latest Model Training Metrics",
       "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 44 },
+      "id": 300,
+      "title": "Leakage-Free Backtest: Feb–Mar 2026 (Trained on data up to Jan 31, Recursive Predictions)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "#F2495C", "value": null },
+            { "color": "#FF9830", "value": 0 },
+            { "color": "#73BF69", "value": 0.5 }
+          ]},
+          "decimals": 4
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 45 },
+      "id": 301,
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "targets": [{
+        "editorMode": "code",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT variable AS \"Variable\", ROUND(test_mae::numeric, 3) AS \"MAE\", ROUND(test_rmse::numeric, 3) AS \"RMSE\", ROUND(test_r2::numeric, 4) AS \"R² Score\" FROM public.leakage_free_metrics ORDER BY variable;",
+        "refId": "A"
+      }],
+      "title": "Recursive Forecast Metrics (Zero Data Leakage — 26 Years Training, Tested on Feb–Mar 2026)",
+      "description": "Model trained ONLY on data up to Jan 31 2026. Predictions made recursively — each prediction feeds into the next step. No future data ever used.",
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "°C",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 49 },
+      "id": 302,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'temperature_2m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Temperature (°C) — Actual vs Recursive ML Forecast",
+      "description": "Green solid = actual observed temperature. Orange dashed = ML recursive forecast (no future data used). Train cutoff: Jan 31 2026.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "%",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 49 },
+      "id": 303,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'cloud_cover' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Cloud Cover (%) — Actual vs Recursive ML Forecast",
+      "description": "Cloud cover is inherently chaotic. Recursive errors compound but overall trend is captured.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "m/s",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "velocityms"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 58 },
+      "id": 304,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'wind_speed_10m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Wind Speed (m/s) — Actual vs Recursive ML Forecast",
+      "description": "Wind is highly stochastic. Model captures general magnitude but not rapid fluctuations.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "W/m²",
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "wattm2"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "actual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } },
+            { "id": "custom.lineWidth", "value": 2 }
+          ]},
+          { "matcher": { "id": "byName", "options": "predicted" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } },
+            { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 58 },
+      "id": 305,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, actual, predicted FROM public.leakage_free_forecast WHERE variable = 'shortwave_radiation' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "GHI / Shortwave Radiation (W/m²) — Actual vs Recursive ML Forecast",
+      "description": "Best performing recursive forecast (R²=0.87). Strong diurnal cycle makes solar highly predictable.",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisLabel": "Error (Actual - Predicted)",
+            "drawStyle": "bars",
+            "fillOpacity": 30,
+            "lineWidth": 0,
+            "pointSize": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "residual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 67 },
+      "id": 306,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, residual FROM public.leakage_free_forecast WHERE variable = 'temperature_2m' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "Temperature Residuals (Actual − Predicted)",
+      "description": "Random scatter = no systematic bias. Drift over time = error compounding (expected in recursive forecasting).",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "weather-postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisLabel": "Error (Actual - Predicted)",
+            "drawStyle": "bars",
+            "fillOpacity": 30,
+            "lineWidth": 0,
+            "pointSize": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" }
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "residual" }, "properties": [
+            { "id": "color", "value": { "fixedColor": "#8AB8FF", "mode": "fixed" } }
+          ]}
+        ]
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 67 },
+      "id": 307,
+      "targets": [{
+        "editorMode": "code",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT time, residual FROM public.leakage_free_forecast WHERE variable = 'shortwave_radiation' ORDER BY time;",
+        "refId": "A"
+      }],
+      "title": "GHI Residuals (Actual − Predicted)",
+      "description": "Solar residuals. Peaks show cloudy-day misses where model predicted clear sky.",
+      "type": "timeseries"
     }
   ],
   "refresh": "15m",
@@ -666,22 +949,22 @@
   "templating": {
     "list": [
       {
-        "current": { "selected": false, "text": "28.6139", "value": "28.6139" },
+        "current": { "selected": false, "text": "16.04", "value": "16.04" },
         "hide": 0,
         "label": "Latitude",
         "name": "lat",
-        "options": [{ "selected": true, "text": "28.6139", "value": "28.6139" }],
-        "query": "28.6139",
+        "options": [{ "selected": true, "text": "16.04", "value": "16.04" }],
+        "query": "16.04",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
-        "current": { "selected": false, "text": "77.2090", "value": "77.2090" },
+        "current": { "selected": false, "text": "75.05", "value": "75.05" },
         "hide": 0,
         "label": "Longitude",
         "name": "lon",
-        "options": [{ "selected": true, "text": "77.2090", "value": "77.2090" }],
-        "query": "77.2090",
+        "options": [{ "selected": true, "text": "75.05", "value": "75.05" }],
+        "query": "75.05",
         "skipUrlSync": false,
         "type": "textbox"
       }

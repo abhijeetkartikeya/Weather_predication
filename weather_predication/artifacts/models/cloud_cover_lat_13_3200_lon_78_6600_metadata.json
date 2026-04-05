@@ -2,7 +2,7 @@
   "target": "cloud_cover",
   "lat": 13.32,
   "lon": 78.66,
-  "model_version": "20260324025345",
+  "model_version": "20260403090430",
   "algorithm": "xgboost",
   "feature_names": [
     "hour_sin",
@@ -316,8 +316,8 @@
   ],
   "feature_set_version": "v1",
   "metrics": {
-    "mae": 2.649471757953924,
-    "rmse": 4.4254432512617825,
-    "r2": 0.9804700623316397
+    "mae": 2.2340425623650058,
+    "rmse": 3.829385497893714,
+    "r2": 0.9851092360970211
   }
 }

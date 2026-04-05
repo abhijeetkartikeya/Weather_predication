@@ -2,7 +2,7 @@
   "target": "shortwave_radiation",
   "lat": 28.6139,
   "lon": 77.209,
-  "model_version": "20260324024225",
+  "model_version": "20260403090114",
   "algorithm": "xgboost",
   "feature_names": [
     "hour_sin",
@@ -316,8 +316,8 @@
   ],
   "feature_set_version": "v1",
   "metrics": {
-    "mae": 8.56149832763563,
-    "rmse": 18.741126133765558,
-    "r2": 0.9958118759183677
+    "mae": 8.685139985236107,
+    "rmse": 16.609119801769282,
+    "r2": 0.9966243240920224
   }
 }

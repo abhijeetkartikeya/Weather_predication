@@ -2,7 +2,7 @@
   "target": "diffuse_radiation",
   "lat": 16.04,
   "lon": 75.05,
-  "model_version": "20260324090532",
+  "model_version": "20260403090515",
   "algorithm": "xgboost",
   "feature_names": [
     "hour_sin",
@@ -316,8 +316,8 @@
   ],
   "feature_set_version": "v1",
   "metrics": {
-    "mae": 1.6511680559394535,
-    "rmse": 3.2826275996789565,
-    "r2": 0.9980889920387043
+    "mae": 2.966222378822021,
+    "rmse": 6.687779049815747,
+    "r2": 0.9943025051178703
   }
 }

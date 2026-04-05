@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import math
 
 import joblib
+import numpy as np
 import pandas as pd
 
 from .db import ensure_schema, fetch_dataframe, upsert_dataframe
@@ -11,6 +13,32 @@ from .logging_utils import get_logger
 from .settings import Settings, load_settings, location_token
 
 logger = get_logger("weather_ml.prediction")
+
+# Max rate-of-change per 15-min step (prevents spikes)
+_MAX_DELTA_PER_STEP: dict[str, float] = {
+    "temperature_2m": 0.8,
+    "cloud_cover": 8.0,
+    "wind_speed_10m": 1.5,
+    "shortwave_radiation": 80.0,
+    "diffuse_radiation": 40.0,
+}
+
+
+def _ml_weight(step: int, total_steps: int) -> float:
+    """Adaptive blending weight for the ML *correction* (delta) applied on top
+    of the provider forecast.
+
+    Near-term (step 0): 70% ML correction weight
+    Far-term (last step): ~15% ML correction weight
+    Uses exponential decay so trust in ML drops quickly as the horizon grows.
+    """
+    progress = step / max(total_steps - 1, 1)
+    return 0.70 * math.exp(-3.0 * progress)
+
+
+def _gaussian_smooth(series: pd.Series, window: int = 11, sigma: float = 3.0) -> pd.Series:
+    """Gaussian-weighted rolling mean — much smoother than simple rolling."""
+    return series.rolling(window=window, min_periods=1, center=True, win_type="gaussian").mean(std=sigma)
 
 
 def _provider_columns(settings: Settings) -> list[str]:
@@ -88,8 +116,12 @@ def generate_predictions(
     bundles = {target: _load_model_bundle(target, lat, lon, settings) for target in settings.target_columns}
     wide_rows: list[dict[str, object]] = []
     long_rows: list[dict[str, object]] = []
+    total_steps = len(full_future_index)
 
-    for forecast_time in full_future_index:
+    # Track previous predicted value per target for rate-of-change clamping
+    prev_predicted: dict[str, float] = {}
+
+    for step_idx, forecast_time in enumerate(full_future_index):
         seed_row = provider_values.loc[forecast_time].copy() if forecast_time in provider_values.index else pd.Series(dtype=float)
         history.loc[forecast_time, settings.observation_columns] = seed_row.reindex(settings.observation_columns).values
 
@@ -104,19 +136,74 @@ def generate_predictions(
             "model_version": "",
         }
 
+        w_ml = _ml_weight(step_idx, total_steps)
+
         for target, (model, metadata) in bundles.items():
             feature_names = metadata["feature_names"]
             row = feature_row.reindex(columns=feature_names, fill_value=0.0)
-            prediction = float(model.predict(row)[0])
-            history.at[forecast_time, target] = prediction
-            forecast_row[target] = prediction
+            raw_ml = float(model.predict(row)[0])
+
+            # Get provider value as the anchor/base
+            provider_val = seed_row.get(target, np.nan) if not seed_row.empty else np.nan
+
+            # ── Physical constraints on raw ML prediction ────
+            hour = forecast_time.hour if hasattr(forecast_time, 'hour') else pd.Timestamp(forecast_time).hour
+            if target in ("shortwave_radiation", "diffuse_radiation"):
+                if hour < 5 or hour > 19:
+                    raw_ml = 0.0
+                raw_ml = max(0.0, raw_ml)
+            elif target == "cloud_cover":
+                raw_ml = max(0.0, min(100.0, raw_ml))
+            elif target == "wind_speed_10m":
+                raw_ml = max(0.0, raw_ml)
+
+            # ── Delta-based ML correction ────
+            # ML predicts a correction (delta) on top of provider forecast,
+            # preventing the model from drifting far from physical reality.
+            if np.isfinite(provider_val):
+                delta = raw_ml - provider_val
+                blended = provider_val + w_ml * delta
+            else:
+                # No provider value available — fall back to raw ML
+                blended = raw_ml
+
+            # ── Max rate-of-change constraint ────
+            if target in _MAX_DELTA_PER_STEP and target in prev_predicted:
+                max_change = _MAX_DELTA_PER_STEP[target]
+                prev_val = prev_predicted[target]
+                blended = max(prev_val - max_change, min(prev_val + max_change, blended))
+
+            # ── Re-apply physical constraints after blending & clamping ────
+            if target in ("shortwave_radiation", "diffuse_radiation"):
+                if hour < 5 or hour > 19:
+                    blended = 0.0
+                blended = max(0.0, blended)
+            elif target == "cloud_cover":
+                blended = max(0.0, min(100.0, blended))
+            elif target == "wind_speed_10m":
+                blended = max(0.0, blended)
+
+            # Update previous predicted value tracker
+            prev_predicted[target] = blended
+
+            # ── Inertia-based feedback ────
+            # When feeding back to history for next step's lag features, blend
+            # with the previous history value to dampen autoregressive oscillation.
+            prev_history_val = history.at[forecast_time, target] if forecast_time in history.index and pd.notna(history.at[forecast_time, target]) else np.nan
+            if np.isfinite(prev_history_val):
+                feedback_value = 0.7 * blended + 0.3 * prev_history_val
+            else:
+                feedback_value = blended
+            history.at[forecast_time, target] = feedback_value
+
+            forecast_row[target] = blended
             forecast_row["model_version"] = metadata["model_version"]
             long_rows.append(
                 {
                     "issue_time": provider_issue_time.to_pydatetime(),
                     "forecast_time": forecast_time.to_pydatetime(),
                     "target": target,
-                    "predicted_value": prediction,
+                    "predicted_value": blended,
                     "model_version": metadata["model_version"],
                 }
             )
@@ -126,6 +213,42 @@ def generate_predictions(
         wide_rows.append(forecast_row)
 
     forecast_frame = pd.DataFrame(wide_rows)
+
+    # ── Post-prediction Gaussian smoothing ─────────────────────────────
+    # Gaussian-weighted rolling mean (window=11, sigma=3.0) produces much
+    # smoother curves than a simple box filter while preserving trends.
+    smooth_window = 11
+    smooth_sigma = 3.0
+    for target in settings.target_columns:
+        if target in forecast_frame.columns:
+            forecast_frame[target] = _gaussian_smooth(
+                forecast_frame[target], window=smooth_window, sigma=smooth_sigma
+            )
+            # Re-apply physical constraints after smoothing
+            if target in ("shortwave_radiation", "diffuse_radiation"):
+                ft_col = pd.to_datetime(forecast_frame["forecast_time"])
+                night_mask = ft_col.dt.hour.isin(list(range(0, 5)) + list(range(20, 24)))
+                forecast_frame.loc[night_mask, target] = 0.0
+                forecast_frame[target] = forecast_frame[target].clip(lower=0.0)
+            elif target == "cloud_cover":
+                forecast_frame[target] = forecast_frame[target].clip(0.0, 100.0)
+            elif target == "wind_speed_10m":
+                forecast_frame[target] = forecast_frame[target].clip(lower=0.0)
+    logger.info("Applied Gaussian smoothing (window=%d, sigma=%.1f) to %d forecast rows", smooth_window, smooth_sigma, len(forecast_frame))
+
+    # Update long_rows to match smoothed values
+    long_rows = []
+    for _, row_data in forecast_frame.iterrows():
+        for target in settings.target_columns:
+            if target in row_data:
+                long_rows.append({
+                    "issue_time": row_data["issue_time"],
+                    "forecast_time": row_data["forecast_time"],
+                    "target": target,
+                    "predicted_value": row_data[target],
+                    "model_version": row_data.get("model_version", ""),
+                })
+
     upsert_dataframe(
         "weather_forecast",
         forecast_frame,
@@ -143,7 +266,7 @@ def generate_predictions(
 
     # Write to simplified weather_predictions table
     simplified_rows = []
-    for row in wide_rows:
+    for _, row in forecast_frame.iterrows():
         simplified_rows.append({
             "latitude": lat,
             "longitude": lon,
